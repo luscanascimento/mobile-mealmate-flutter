@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy (pre-API 26) launcher icon: a vector so no binary PNGs are needed.
+     On API 26+ the adaptive icon in mipmap-anydpi-v26/ic_launcher.xml is used. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF6D3B"
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,30 L44,45 M40,30 L40,45 M48,30 L48,45 M44,45 C40,45 40,52 44,52 C48,52 48,45 44,45 Z M44,52 L44,80" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,30 C60,30 60,50 66,50 C72,50 72,30 66,30 Z M66,50 L66,80" />
+</vector>
