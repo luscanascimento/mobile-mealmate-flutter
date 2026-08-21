@@ -55,8 +55,10 @@ class ShoppingListBuilder {
       );
     }).toList();
 
-    items.sort((ShoppingItem a, ShoppingItem b) =>
-        a.name.toLowerCase().compareTo(b.name.toLowerCase()),);
+    items.sort(
+      (ShoppingItem a, ShoppingItem b) =>
+          a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
     return items;
   }
 

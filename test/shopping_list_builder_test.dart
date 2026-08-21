@@ -74,7 +74,10 @@ void main() {
     ];
 
     final List<ShoppingItem> items = builder.build(favorites);
-    expect(items.map((ShoppingItem e) => e.name), <String>['Apple', 'Zucchini']);
+    expect(
+      items.map((ShoppingItem e) => e.name),
+      <String>['Apple', 'Zucchini'],
+    );
   });
 
   test('counts a meal once per ingredient even if repeated internally', () {

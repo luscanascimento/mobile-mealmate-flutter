@@ -25,8 +25,7 @@ class CategoryMealsPage extends ConsumerWidget {
         loading: () => const GridShimmer(),
         error: (Object error, StackTrace _) => ErrorStateView(
           message: error.toString(),
-          onRetry: () =>
-              ref.invalidate(mealsByCategoryProvider(categoryName)),
+          onRetry: () => ref.invalidate(mealsByCategoryProvider(categoryName)),
         ),
         data: (List<MealSummary> items) {
           if (items.isEmpty) {

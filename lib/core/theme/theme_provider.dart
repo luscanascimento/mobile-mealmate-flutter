@@ -38,7 +38,8 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 /// The settings box is opened during bootstrap and provided via override.
 final Provider<Box<dynamic>> settingsBoxProvider = Provider<Box<dynamic>>(
-  (Ref ref) => throw UnimplementedError('settingsBoxProvider must be overridden'),
+  (Ref ref) =>
+      throw UnimplementedError('settingsBoxProvider must be overridden'),
 );
 
 final StateNotifierProvider<ThemeModeNotifier, ThemeMode> themeModeProvider =

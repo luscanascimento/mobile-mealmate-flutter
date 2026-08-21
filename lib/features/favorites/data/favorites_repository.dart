@@ -32,8 +32,9 @@ class FavoritesRepository {
       }
     }
     // Stable, predictable ordering by name.
-    meals.sort((Meal a, Meal b) =>
-        a.name.toLowerCase().compareTo(b.name.toLowerCase()),);
+    meals.sort(
+      (Meal a, Meal b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
     return meals;
   }
 

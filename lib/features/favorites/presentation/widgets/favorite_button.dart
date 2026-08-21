@@ -9,7 +9,11 @@ import '../providers/favorites_providers.dart';
 /// Requires the full [Meal] (not just an id) so the meal can be persisted for
 /// offline favorites and the shopping-list aggregation.
 class FavoriteButton extends ConsumerWidget {
-  const FavoriteButton({required this.meal, this.filledBackground = false, super.key});
+  const FavoriteButton({
+    required this.meal,
+    this.filledBackground = false,
+    super.key,
+  });
 
   final Meal meal;
   final bool filledBackground;
@@ -39,9 +43,7 @@ class FavoriteButton extends ConsumerWidget {
         ..showSnackBar(
           SnackBar(
             content: Text(
-              nowFavorite
-                  ? 'Added to favorites'
-                  : 'Removed from favorites',
+              nowFavorite ? 'Added to favorites' : 'Removed from favorites',
             ),
             duration: const Duration(seconds: 2),
           ),

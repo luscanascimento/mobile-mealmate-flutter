@@ -19,7 +19,10 @@ class ScaffoldWithNav extends StatelessWidget {
     _NavItem(Icons.casino_outlined, Icons.casino, 'Surprise'),
     _NavItem(Icons.favorite_outline, Icons.favorite, 'Favorites'),
     _NavItem(
-        Icons.shopping_cart_outlined, Icons.shopping_cart, 'Shopping',),
+      Icons.shopping_cart_outlined,
+      Icons.shopping_cart,
+      'Shopping',
+    ),
   ];
 
   void _onTap(int index) {

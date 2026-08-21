@@ -74,8 +74,7 @@ class _ShoppingTileState extends State<_ShoppingTile> {
 
     return CheckboxListTile(
       value: _checked,
-      onChanged: (bool? value) =>
-          setState(() => _checked = value ?? false),
+      onChanged: (bool? value) => setState(() => _checked = value ?? false),
       controlAffinity: ListTileControlAffinity.leading,
       title: Text(
         item.name,

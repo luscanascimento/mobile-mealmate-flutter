@@ -109,8 +109,7 @@ class Meal extends Equatable {
         'youtubeUrl': youtubeUrl,
         'sourceUrl': sourceUrl,
         'tags': tags,
-        'ingredients':
-            ingredients.map((Ingredient e) => e.toJson()).toList(),
+        'ingredients': ingredients.map((Ingredient e) => e.toJson()).toList(),
       };
 
   factory Meal.fromStoredJson(Map<String, dynamic> json) {
@@ -130,8 +129,10 @@ class Meal extends Equatable {
               .toList() ??
           const <String>[],
       ingredients: rawIngredients
-          .map((dynamic e) =>
-              Ingredient.fromJson(Map<String, dynamic>.from(e as Map)),)
+          .map(
+            (dynamic e) =>
+                Ingredient.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList(),
     );
   }

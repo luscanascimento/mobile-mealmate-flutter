@@ -54,8 +54,7 @@ GoRouter createRouter() {
                     name: AppRoutes.categoryMeals,
                     parentNavigatorKey: rootKey,
                     builder: (BuildContext context, GoRouterState state) {
-                      final String name =
-                          state.pathParameters['name'] ?? '';
+                      final String name = state.pathParameters['name'] ?? '';
                       return CategoryMealsPage(categoryName: name);
                     },
                   ),

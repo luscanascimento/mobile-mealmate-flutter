@@ -183,9 +183,8 @@ class _Roulette extends StatelessWidget {
               child: AnimatedBuilder(
                 animation: controller,
                 builder: (BuildContext context, Widget? child) {
-                  final int index =
-                      (controller.value * _icons.length).floor() %
-                          _icons.length;
+                  final int index = (controller.value * _icons.length).floor() %
+                      _icons.length;
                   return Center(
                     child: Icon(
                       _icons[index],
@@ -198,8 +197,10 @@ class _Roulette extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Text('Finding something tasty...',
-              style: theme.textTheme.titleMedium,),
+          Text(
+            'Finding something tasty...',
+            style: theme.textTheme.titleMedium,
+          ),
         ],
       ),
     );
@@ -231,7 +232,9 @@ class _Result extends StatelessWidget {
                       top: 8,
                       right: 8,
                       child: FavoriteButton(
-                          meal: meal, filledBackground: true,),
+                        meal: meal,
+                        filledBackground: true,
+                      ),
                     ),
                   ],
                 ),

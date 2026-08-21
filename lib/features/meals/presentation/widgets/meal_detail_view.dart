@@ -67,7 +67,10 @@ class MealDetailView extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 24),
-                const _SectionTitle('Ingredients', icon: Icons.shopping_basket_outlined),
+                const _SectionTitle(
+                  'Ingredients',
+                  icon: Icons.shopping_basket_outlined,
+                ),
                 const SizedBox(height: 8),
                 _Ingredients(ingredients: meal.ingredients),
                 const SizedBox(height: 24),
@@ -133,8 +136,11 @@ class _Ingredients extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
             children: <Widget>[
-              Icon(Icons.check_circle_outline,
-                  size: 20, color: theme.colorScheme.primary,),
+              Icon(
+                Icons.check_circle_outline,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -209,8 +215,8 @@ class _SectionTitle extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           title,
-          style: theme.textTheme.titleLarge
-              ?.copyWith(fontWeight: FontWeight.w700),
+          style:
+              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
       ],
     );

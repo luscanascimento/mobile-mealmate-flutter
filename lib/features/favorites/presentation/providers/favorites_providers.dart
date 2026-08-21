@@ -21,8 +21,7 @@ class FavoritesNotifier extends StateNotifier<List<Meal>> {
 
   final FavoritesRepository _repository;
 
-  bool isFavorite(String mealId) =>
-      state.any((Meal meal) => meal.id == mealId);
+  bool isFavorite(String mealId) => state.any((Meal meal) => meal.id == mealId);
 
   Future<bool> toggle(Meal meal) async {
     final bool nowFavorite = await _repository.toggle(meal);

@@ -23,7 +23,9 @@ class AppNetworkImage extends StatelessWidget {
 
   bool get _isValid {
     final String? u = url;
-    return u != null && u.isNotEmpty && Uri.tryParse(u)?.isScheme('https') == true;
+    return u != null &&
+        u.isNotEmpty &&
+        Uri.tryParse(u)?.isScheme('https') == true;
   }
 
   @override

@@ -15,8 +15,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<Category>> categories =
-        ref.watch(categoriesProvider);
+    final AsyncValue<List<Category>> categories = ref.watch(categoriesProvider);
     final ThemeMode themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
