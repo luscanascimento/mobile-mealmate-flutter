@@ -1,0 +1,56 @@
+name: mealmate
+description: "MealMate — a recipe discovery app built with Flutter and TheMealDB API."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Networking
+  dio: ^5.5.0+1
+
+  # Navigation
+  go_router: ^14.2.7
+
+  # Models / serialization
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # Local persistence
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Images / loading UX
+  cached_network_image: ^3.4.0
+  shimmer: ^3.0.0
+
+  # Utilities
+  url_launcher: ^6.3.0
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # Codegen (providers are hand-written and Hive stores plain String boxes,
+  # so riverpod_generator/hive_generator are intentionally not used)
+  build_runner: ^2.4.11
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+
+  # Testing
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
