@@ -5,8 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// Persists and exposes the user's preferred [ThemeMode].
 ///
 /// The preference is stored in a small Hive settings box so the chosen theme
-/// survives app restarts. No sensitive data is involved, so a plain box is
-/// appropriate here.
+/// survives app restarts.
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier(this._box) : super(_read(_box));
 

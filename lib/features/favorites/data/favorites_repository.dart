@@ -6,11 +6,8 @@ import '../../meals/data/models/meal.dart';
 
 /// Persists favorited meals locally using a Hive box.
 ///
-/// We store the full [Meal] (as JSON) so the favorites list and the aggregated
-/// shopping list work fully offline — no re-fetch required after favoriting.
-/// The data is non-sensitive (public recipes), so a standard box is used; if
-/// sensitive data were ever stored, `Hive.openBox` would be replaced with an
-/// encrypted box backed by a key from flutter_secure_storage.
+/// We store the full [Meal] (as JSON) rather than just its id, so the favorites
+/// list and the aggregated shopping list work with no network.
 class FavoritesRepository {
   FavoritesRepository(this._box);
 

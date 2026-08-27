@@ -11,9 +11,6 @@ import 'shopping_item.dart';
 /// * Duplicate measures for the same ingredient are collapsed.
 /// * The number of favorited meals using each ingredient is counted.
 /// * Output is sorted alphabetically for a stable, scannable list.
-///
-/// This is intentionally free of Flutter/Riverpod so it is trivially unit
-/// testable.
 class ShoppingListBuilder {
   const ShoppingListBuilder();
 

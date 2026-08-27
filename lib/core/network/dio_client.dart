@@ -5,10 +5,9 @@ import '../config/api_config.dart';
 
 /// Builds and configures the shared [Dio] instance used across the app.
 ///
-/// Security notes:
-/// * Base URL is HTTPS-only (see [ApiConfig.baseUrl]).
-/// * We reject any non-HTTPS request defensively via an interceptor.
-/// * Logging is enabled only in debug builds so we never leak data in release.
+/// The base URL is HTTPS (see [ApiConfig.baseUrl]); an interceptor rejects any
+/// request that somehow ends up on another scheme. Request logging is wired
+/// only in debug builds.
 class DioClient {
   const DioClient._();
 
@@ -28,8 +27,10 @@ class DioClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          // Defense-in-depth: block any accidental plaintext request.
           if (!options.uri.isScheme('https')) {
+            // `badCertificate` is the closest Dio type to "transport was not
+            // trustworthy": it is what makes ApiException render "Insecure
+            // connection was blocked" instead of the generic fallback.
             handler.reject(
               DioException(
                 requestOptions: options,

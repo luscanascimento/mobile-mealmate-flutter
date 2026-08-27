@@ -29,18 +29,14 @@ migrate_working_dir/
 .pub/
 /build/
 
-# NOTE: pubspec.lock IS committed — this is an application, not a library, so
-# the exact resolved dependency versions are part of the source of truth.
-# Generated `*.freezed.dart` / `*.g.dart` files are committed too, so a fresh
-# clone builds without running build_runner first.
+# pubspec.lock and the generated *.freezed.dart / *.g.dart files are committed
+# on purpose, so a fresh clone builds without running build_runner first.
 
 # Symbolication / obfuscation
 app.*.symbols
 app.*.map.json
 
-# Android related
-# The Gradle wrapper (gradlew, gradlew.bat AND gradle-wrapper.jar) IS committed
-# so the project builds immediately after clone with `flutter build`.
+# Android related (the Gradle wrapper, jar included, is committed)
 .gradle/
 **/android/captures/
 **/android/local.properties
