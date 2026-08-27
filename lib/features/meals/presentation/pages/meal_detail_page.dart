@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../data/models/meal.dart';
 import '../providers/meal_providers.dart';
@@ -21,7 +22,7 @@ class MealDetailPage extends ConsumerWidget {
         loading: () => const _DetailLoading(),
         error: (Object error, StackTrace _) => SafeArea(
           child: ErrorStateView(
-            message: error.toString(),
+            message: ApiException.messageFor(error),
             onRetry: () => ref.invalidate(mealDetailProvider(mealId)),
           ),
         ),

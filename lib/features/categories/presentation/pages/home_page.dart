@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/theme_provider.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/grid_shimmer.dart';
@@ -42,7 +43,7 @@ class HomePage extends ConsumerWidget {
               SizedBox(
                 height: MediaQuery.sizeOf(context).height * 0.7,
                 child: ErrorStateView(
-                  message: error.toString(),
+                  message: ApiException.messageFor(error),
                   onRetry: () => ref.invalidate(categoriesProvider),
                 ),
               ),

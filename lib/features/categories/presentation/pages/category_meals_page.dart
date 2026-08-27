@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/widgets/grid_shimmer.dart';
 import '../../../../core/widgets/state_views.dart';
@@ -24,7 +25,7 @@ class CategoryMealsPage extends ConsumerWidget {
       body: meals.when(
         loading: () => const GridShimmer(),
         error: (Object error, StackTrace _) => ErrorStateView(
-          message: error.toString(),
+          message: ApiException.messageFor(error),
           onRetry: () => ref.invalidate(mealsByCategoryProvider(categoryName)),
         ),
         data: (List<MealSummary> items) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/app_network_image.dart';
 import '../../../../core/widgets/state_views.dart';
@@ -94,7 +95,7 @@ class _SurprisePageState extends ConsumerState<SurprisePage>
     return meal.when(
       loading: () => _Roulette(controller: _spinController),
       error: (Object error, StackTrace _) => ErrorStateView(
-        message: error.toString(),
+        message: ApiException.messageFor(error),
         onRetry: _spin,
       ),
       data: (Meal? value) {

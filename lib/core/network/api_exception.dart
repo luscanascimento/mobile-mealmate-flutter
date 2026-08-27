@@ -42,6 +42,14 @@ class ApiException extends Equatable implements Exception {
     }
   }
 
+  /// User-safe text for any error surfaced by the data layer.
+  ///
+  /// Screens must render this instead of `error.toString()`, which would leak
+  /// the class name and status code (`ApiException(500): ...`) into the UI.
+  static String messageFor(Object error) => error is ApiException
+      ? error.message
+      : 'Something went wrong. Please try again.';
+
   @override
   List<Object?> get props => <Object?>[message, statusCode];
 
