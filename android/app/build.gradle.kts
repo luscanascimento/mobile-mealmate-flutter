@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mealmate"
+    namespace = "br.com.fabersoft.mealmate"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.mealmate"
+        applicationId = "br.com.fabersoft.mealmate"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -29,9 +29,8 @@ android {
 
     buildTypes {
         release {
-            // Signing with the debug keys for now so `flutter run --release`
-            // works out of the box. Replace with a real signing config before
-            // publishing.
+            // Debug keys: this repo has no keystore, so release builds are for
+            // local profiling only and are NOT publishable as-is.
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
