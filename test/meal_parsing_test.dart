@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mealmate/features/meals/data/models/meal.dart';
 
 void main() {
-  group('Meal.fromJson', () {
+  group('Meal.fromApiJson', () {
     test('folds flat ingredient/measure pairs and skips empties', () {
       final Map<String, dynamic> json = <String, dynamic>{
         'idMeal': '52772',
@@ -25,7 +25,7 @@ void main() {
         'strMeasure4': '',
       };
 
-      final Meal meal = Meal.fromJson(json);
+      final Meal meal = Meal.fromApiJson(json);
 
       expect(meal.id, '52772');
       expect(meal.name, 'Teriyaki Chicken');
@@ -41,7 +41,7 @@ void main() {
     });
 
     test('splits instructions into non-empty trimmed steps', () {
-      final Meal meal = Meal.fromJson(const <String, dynamic>{
+      final Meal meal = Meal.fromApiJson(const <String, dynamic>{
         'idMeal': '1',
         'strMeal': 'Test',
         'strInstructions': ' First. \n\n Second. \r\n',
@@ -50,7 +50,8 @@ void main() {
     });
 
     test('is defensive against missing fields', () {
-      final Meal meal = Meal.fromJson(const <String, dynamic>{'idMeal': '9'});
+      final Meal meal =
+          Meal.fromApiJson(const <String, dynamic>{'idMeal': '9'});
       expect(meal.name, 'Unknown meal');
       expect(meal.ingredients, isEmpty);
       expect(meal.steps, isEmpty);
@@ -58,7 +59,7 @@ void main() {
     });
 
     test('rejects non-https youtube url', () {
-      final Meal meal = Meal.fromJson(const <String, dynamic>{
+      final Meal meal = Meal.fromApiJson(const <String, dynamic>{
         'idMeal': '1',
         'strMeal': 'Test',
         'strYoutube': 'http://insecure.example.com',
@@ -68,8 +69,8 @@ void main() {
   });
 
   group('Meal round-trip persistence', () {
-    test('toJson/fromStoredJson preserves data', () {
-      final Meal original = Meal.fromJson(const <String, dynamic>{
+    test('toJson/fromJson preserves data', () {
+      final Meal original = Meal.fromApiJson(const <String, dynamic>{
         'idMeal': '42',
         'strMeal': 'Round Trip',
         'strCategory': 'Dessert',
@@ -77,7 +78,7 @@ void main() {
         'strMeasure1': '100g',
       });
 
-      final Meal restored = Meal.fromStoredJson(original.toJson());
+      final Meal restored = Meal.fromJson(original.toJson());
 
       expect(restored, original);
     });

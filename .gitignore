@@ -28,7 +28,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-pubspec.lock
+
+# NOTE: pubspec.lock IS committed — this is an application, not a library, so
+# the exact resolved dependency versions are part of the source of truth.
+# Generated `*.freezed.dart` / `*.g.dart` files are committed too, so a fresh
+# clone builds without running build_runner first.
 
 # Symbolication / obfuscation
 app.*.symbols

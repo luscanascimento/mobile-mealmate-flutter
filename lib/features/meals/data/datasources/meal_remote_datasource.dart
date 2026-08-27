@@ -55,7 +55,7 @@ class MealRemoteDataSource {
     Map<String, dynamic>? query,
   ) async {
     final List<Map<String, dynamic>> raw = await _rawMeals(path, query);
-    return raw.map(Meal.fromJson).toList(growable: false);
+    return raw.map(Meal.fromApiJson).toList(growable: false);
   }
 
   /// Shared, defensive extraction of the `meals` array.

@@ -1,64 +1,46 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'ingredient.dart';
 import 'meal_summary.dart';
 
+part 'meal.freezed.dart';
+part 'meal.g.dart';
+
 /// Full meal detail as returned by `lookup.php` / `random.php` / `search.php`.
 ///
-/// TheMealDB returns ingredients and measures as 20 flat fields
-/// (`strIngredient1..20`, `strMeasure1..20`). We fold those into a clean list
-/// of [Ingredient]s here, skipping empty/whitespace-only pairs. All parsing is
-/// defensive: unexpected/missing keys never throw.
-class Meal extends Equatable {
-  const Meal({
-    required this.id,
-    required this.name,
-    this.category,
-    this.area,
-    this.instructions,
-    this.thumbnail,
-    this.youtubeUrl,
-    this.sourceUrl,
-    this.tags = const <String>[],
-    this.ingredients = const <Ingredient>[],
-  });
+/// Two JSON shapes exist and are deliberately given separate names:
+///
+/// * [Meal.fromApiJson] parses TheMealDB's wire format, where ingredients are
+///   20 flat fields (`strIngredient1..20` / `strMeasure1..20`). It is
+///   defensive: unexpected or missing keys never throw.
+/// * [Meal.fromJson] / `toJson` are the generated, canonical form used to
+///   persist favorites in Hive.
+@freezed
+class Meal with _$Meal {
+  const Meal._();
 
-  final String id;
-  final String name;
-  final String? category;
-  final String? area;
-  final String? instructions;
-  final String? thumbnail;
-  final String? youtubeUrl;
-  final String? sourceUrl;
-  final List<String> tags;
-  final List<Ingredient> ingredients;
+  // explicitToJson so nested Ingredients are serialized to plain maps: without
+  // it `toJson()` leaks Ingredient instances and `Meal.fromJson(m.toJson())`
+  // throws (it only survives a trip through jsonEncode).
+  @JsonSerializable(explicitToJson: true)
+  const factory Meal({
+    required String id,
+    required String name,
+    String? category,
+    String? area,
+    String? instructions,
+    String? thumbnail,
+    String? youtubeUrl,
+    String? sourceUrl,
+    @Default(<String>[]) List<String> tags,
+    @Default(<Ingredient>[]) List<Ingredient> ingredients,
+  }) = _Meal;
 
-  MealSummary toSummary() =>
-      MealSummary(id: id, name: name, thumbnail: thumbnail);
+  /// Canonical form used for local (Hive) persistence of favorites.
+  factory Meal.fromJson(Map<String, dynamic> json) => _$MealFromJson(json);
 
-  /// Instruction lines split into readable steps.
-  ///
-  /// TheMealDB stores instructions as one blob separated by newlines (or, in a
-  /// few records, by `\r\n`). We split, trim, and drop blanks.
-  List<String> get steps {
-    final String? raw = instructions;
-    if (raw == null || raw.trim().isEmpty) return const <String>[];
-    return raw
-        .split(RegExp(r'\r?\n'))
-        .map((String s) => s.trim())
-        .where((String s) => s.isNotEmpty)
-        .toList(growable: false);
-  }
-
-  bool get hasYoutube {
-    final String? url = youtubeUrl;
-    return url != null &&
-        url.trim().isNotEmpty &&
-        Uri.tryParse(url)?.isScheme('https') == true;
-  }
-
-  factory Meal.fromJson(Map<String, dynamic> json) {
+  /// Parses TheMealDB's wire format, folding the flat ingredient pairs.
+  factory Meal.fromApiJson(Map<String, dynamic> json) {
     String? str(String key) {
       final Object? value = json[key];
       if (value == null) return null;
@@ -98,56 +80,27 @@ class Meal extends Equatable {
     );
   }
 
-  /// Serialization for local (Hive) persistence of favorites.
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'name': name,
-        'category': category,
-        'area': area,
-        'instructions': instructions,
-        'thumbnail': thumbnail,
-        'youtubeUrl': youtubeUrl,
-        'sourceUrl': sourceUrl,
-        'tags': tags,
-        'ingredients': ingredients.map((Ingredient e) => e.toJson()).toList(),
-      };
+  MealSummary toSummary() =>
+      MealSummary(id: id, name: name, thumbnail: thumbnail);
 
-  factory Meal.fromStoredJson(Map<String, dynamic> json) {
-    final List<dynamic> rawIngredients =
-        (json['ingredients'] as List<dynamic>?) ?? const <dynamic>[];
-    return Meal(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      category: json['category'] as String?,
-      area: json['area'] as String?,
-      instructions: json['instructions'] as String?,
-      thumbnail: json['thumbnail'] as String?,
-      youtubeUrl: json['youtubeUrl'] as String?,
-      sourceUrl: json['sourceUrl'] as String?,
-      tags: (json['tags'] as List<dynamic>?)
-              ?.map((dynamic e) => e as String)
-              .toList() ??
-          const <String>[],
-      ingredients: rawIngredients
-          .map(
-            (dynamic e) =>
-                Ingredient.fromJson(Map<String, dynamic>.from(e as Map)),
-          )
-          .toList(),
-    );
+  /// Instruction lines split into readable steps.
+  ///
+  /// TheMealDB stores instructions as one blob separated by newlines (or, in a
+  /// few records, by `\r\n`). We split, trim, and drop blanks.
+  List<String> get steps {
+    final String? raw = instructions;
+    if (raw == null || raw.trim().isEmpty) return const <String>[];
+    return raw
+        .split(RegExp(r'\r?\n'))
+        .map((String s) => s.trim())
+        .where((String s) => s.isNotEmpty)
+        .toList(growable: false);
   }
 
-  @override
-  List<Object?> get props => <Object?>[
-        id,
-        name,
-        category,
-        area,
-        instructions,
-        thumbnail,
-        youtubeUrl,
-        sourceUrl,
-        tags,
-        ingredients,
-      ];
+  bool get hasYoutube {
+    final String? url = youtubeUrl;
+    return url != null &&
+        url.trim().isNotEmpty &&
+        Uri.tryParse(url)?.isScheme('https') == true;
+  }
 }

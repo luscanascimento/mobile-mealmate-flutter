@@ -88,7 +88,8 @@ Key decisions:
   `ShoppingListBuilder`, free of Flutter, so it is trivially unit-tested.
 - **Defensive parsing.** TheMealDB returns ingredients as 20 flat
   `strIngredient*`/`strMeasure*` fields and `{"meals": null}` for "no results".
-  `Meal.fromJson` folds those into a clean list and never throws on missing keys.
+  `Meal.fromApiJson` folds those into a clean list and never throws on missing
+  keys (`Meal.fromJson`/`toJson` are the generated canonical form used for Hive).
 - **Offline-first favorites.** The full recipe is serialized to Hive, so
   favorites and the shopping list work with no network.
 
@@ -122,10 +123,10 @@ Key decisions:
 ### Steps
 
 ```bash
-# 1. Fetch dependencies
+# 1. Fetch dependencies (pubspec.lock is committed, so versions are exact)
 flutter pub get
 
-# 2. Generate code for freezed / json_serializable / riverpod
+# 2. Only after changing a model: regenerate freezed / json_serializable code
 dart run build_runner build --delete-conflicting-outputs
 
 # 3. Static analysis (uses the strict lints in analysis_options.yaml)
@@ -138,13 +139,13 @@ flutter test
 flutter run
 ```
 
-> **Generated code:** committed `*.freezed.dart` / `*.g.dart` files are included
-> so the project builds immediately, but re-running `build_runner` (step 2) is
-> recommended after changing any model.
+> **Generated code:** every `*.freezed.dart` / `*.g.dart` file is committed, so
+> a fresh clone analyzes, tests and builds without step 2. Re-run `build_runner`
+> (step 2) after changing any model and commit the regenerated files.
 
-> **Platform folders:** Android is fully configured. The binary
-> `gradle-wrapper.jar` is intentionally **not** committed — Android Studio (or
-> `gradle wrapper`) regenerates it on first open. For a complete iOS project run
+> **Platform folders:** Android is fully configured, including the committed
+> Gradle wrapper (`gradlew`, `gradlew.bat` **and** `gradle-wrapper.jar`) so the
+> build uses a pinned Gradle version straight from a clone. For a complete iOS project run
 > `flutter create --platforms=ios .` once (it won't touch `lib/`); see
 > [`ios/README_IOS.md`](ios/README_IOS.md). Copy
 > `android/local.properties.example` to `android/local.properties`.
@@ -153,7 +154,7 @@ flutter run
 
 ## 🧪 Tests
 
-Unit tests cover the parts most worth protecting:
+Unit and widget tests cover the parts most worth protecting:
 
 - `test/shopping_list_builder_test.dart` — de-duplication, distinct-measure
   merging, per-meal counting, sorting (the shopping-list logic).
@@ -162,6 +163,13 @@ Unit tests cover the parts most worth protecting:
   persistence.
 - `test/favorites_repository_test.dart` — add/toggle and persistence across box
   reopen (offline durability).
+- `test/meal_remote_datasource_test.dart` — the HTTP layer against a mocked Dio:
+  response parsing, `{"meals": null}` as "no results", and every
+  `DioException` → user-safe `ApiException` mapping.
+- `test/shopping_list_page_test.dart` — tick-off state stays bound to the
+  ingredient (not the row index) when the list reorders or shrinks.
+- `test/search_page_test.dart` — the 400 ms search debounce: one request per
+  keystroke burst, the two-character minimum, and cancellation on clear.
 
 Run them with `flutter test`.
 

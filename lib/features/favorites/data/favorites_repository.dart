@@ -26,7 +26,7 @@ class FavoritesRepository {
       try {
         final Map<String, dynamic> json =
             Map<String, dynamic>.from(jsonDecode(raw) as Map);
-        meals.add(Meal.fromStoredJson(json));
+        meals.add(Meal.fromJson(json));
       } catch (_) {
         // Skip any corrupt entry rather than crashing the whole list.
       }

@@ -47,7 +47,10 @@ class ShoppingListPage extends ConsumerWidget {
                     itemCount: items.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (BuildContext context, int index) =>
-                        _ShoppingTile(item: items[index]),
+                        _ShoppingTile(
+                      key: ValueKey<String>(items[index].key),
+                      item: items[index],
+                    ),
                   ),
                 ),
               ],
@@ -56,31 +59,34 @@ class ShoppingListPage extends ConsumerWidget {
   }
 }
 
-class _ShoppingTile extends StatefulWidget {
-  const _ShoppingTile({required this.item});
+class _ShoppingTile extends ConsumerWidget {
+  const _ShoppingTile({super.key, required this.item});
   final ShoppingItem item;
 
   @override
-  State<_ShoppingTile> createState() => _ShoppingTileState();
-}
-
-class _ShoppingTileState extends State<_ShoppingTile> {
-  bool _checked = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
-    final ShoppingItem item = widget.item;
+    final bool checked = ref.watch(checkedItemsProvider).contains(item.key);
 
     return CheckboxListTile(
-      value: _checked,
-      onChanged: (bool? value) => setState(() => _checked = value ?? false),
+      value: checked,
+      onChanged: (bool? value) {
+        ref.read(checkedItemsProvider.notifier).update((Set<String> current) {
+          final Set<String> next = <String>{...current};
+          if (value ?? false) {
+            next.add(item.key);
+          } else {
+            next.remove(item.key);
+          }
+          return next;
+        });
+      },
       controlAffinity: ListTileControlAffinity.leading,
       title: Text(
         item.name,
         style: theme.textTheme.titleMedium?.copyWith(
-          decoration: _checked ? TextDecoration.lineThrough : null,
-          color: _checked ? theme.colorScheme.outline : null,
+          decoration: checked ? TextDecoration.lineThrough : null,
+          color: checked ? theme.colorScheme.outline : null,
         ),
       ),
       subtitle: item.hasMeasures

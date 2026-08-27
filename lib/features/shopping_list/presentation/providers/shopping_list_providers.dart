@@ -18,3 +18,11 @@ final Provider<List<ShoppingItem>> shoppingListProvider =
   final ShoppingListBuilder builder = ref.watch(shoppingListBuilderProvider);
   return builder.build(favorites);
 });
+
+/// Ticked-off items, keyed by `ShoppingItem.key`.
+///
+/// Held here rather than in the tile's `State` because the list reorders and
+/// shrinks as favorites change: element recycling in `ListView` would otherwise
+/// leave a checkmark on whichever ingredient inherited the row.
+final StateProvider<Set<String>> checkedItemsProvider =
+    StateProvider<Set<String>>((Ref ref) => <String>{});
