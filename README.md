@@ -3,17 +3,18 @@
 > Discover, save, and shop for recipes — a polished Flutter recipe app powered by [TheMealDB](https://www.themealdb.com/), featuring a random-recipe roulette and an auto-generated shopping list.
 
 <p>
-  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.24%2B-02569B?logo=flutter&logoColor=white">
+  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.22%2B-02569B?logo=flutter&logoColor=white">
   <img alt="Dart" src="https://img.shields.io/badge/Dart-3.4%2B-0175C2?logo=dart&logoColor=white">
   <img alt="State" src="https://img.shields.io/badge/State-Riverpod-4c51bf">
   <img alt="Material 3" src="https://img.shields.io/badge/UI-Material%203-757de8">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-green">
 </p>
 
-MealMate is a mobile recipe-discovery app built to production-quality standards:
-clean feature-first architecture, reactive state management, offline persistence,
-careful UX (shimmer loading, empty & error states, light/dark, tablet layouts),
-and security-minded networking (HTTPS-only, no secrets, defensive JSON parsing).
+MealMate is a portfolio Flutter app: a feature-first architecture with Riverpod,
+offline favorites in Hive, and deliberate UX states (shimmer loading, empty and
+error views, light/dark, tablet layouts). It talks to one public read-only API,
+so there is no auth, no backend and no sync — see
+[Scope & known limitations](#-scope--known-limitations).
 
 ---
 
@@ -22,7 +23,8 @@ and security-minded networking (HTTPS-only, no secrets, defensive JSON parsing).
 - **Browse by category** — a responsive grid of meal categories from TheMealDB.
 - **Search** — debounced, incremental recipe search by name.
 - **Rich meal detail** — hero image, category/area/tags, ingredients paired with
-  their measures, numbered step-by-step instructions, and a direct YouTube link.
+  their measures, numbered step-by-step instructions, and a YouTube link when
+  the recipe has one.
 - **Favorites** — save recipes locally; they persist across restarts and are
   fully available **offline** (the whole recipe is stored, not just an id).
 - **"Surprise Me" roulette** — a spinning animation that lands on a fresh
@@ -85,7 +87,7 @@ Key decisions:
   is a *derived* provider that recomputes automatically whenever favorites change
   — no manual refresh, no duplicated state.
 - **Pure domain logic.** The de-duplication/aggregation lives in
-  `ShoppingListBuilder`, free of Flutter, so it is trivially unit-tested.
+  `ShoppingListBuilder`, free of Flutter, and unit-tested directly.
 - **Defensive parsing.** TheMealDB returns ingredients as 20 flat
   `strIngredient*`/`strMeasure*` fields and `{"meals": null}` for "no results".
   `Meal.fromApiJson` folds those into a clean list and never throws on missing
@@ -93,17 +95,21 @@ Key decisions:
 - **Offline-first favorites.** The full recipe is serialized to Hive, so
   favorites and the shopping list work with no network.
 
-### 🔒 Security & best practices
+### Networking hygiene
 
-- **HTTPS-only.** The base URL is HTTPS and a Dio interceptor *rejects* any
-  non-HTTPS request. Android sets `usesCleartextTraffic="false"`; iOS sets
-  `NSAllowsArbitraryLoads=false`.
-- **No secrets / no API keys.** TheMealDB's public test endpoint needs none, and
-  nothing sensitive is committed (`.gitignore` blocks `.env`, keystores, etc.).
-- **Safe error handling.** Low-level `DioException`s are mapped to friendly,
-  user-safe messages via `ApiException`; verbose logging is debug-only.
+TheMealDB is a public, key-less, read-only API, so there is no auth, no token
+storage and nothing to encrypt. What the code does do:
+
+- **HTTPS-only transport.** The base URL is HTTPS, a Dio interceptor rejects any
+  request on another scheme, Android sets `usesCleartextTraffic="false"` and
+  `ios/Runner/Info.plist` sets `NSAllowsArbitraryLoads=false`.
+- **Errors never leak internals.** `DioException`s are mapped to `ApiException`
+  and screens render `ApiException.messageFor(error)`, never `error.toString()`
+  — covered by `test/error_message_test.dart`. Dio's `LogInterceptor` is wired
+  only under `kDebugMode`.
 - **Validated external links.** `UrlHelper` only opens well-formed HTTPS URLs.
-- **Input validation.** Search ignores blank/too-short queries and is debounced.
+- **Query guards.** Search ignores queries under two characters and debounces
+  input by 400 ms.
 
 ---
 
@@ -113,12 +119,11 @@ Key decisions:
 
 | Tool | Version |
 | --- | --- |
-| Flutter | **3.24+** (stable channel) |
+| Flutter | **3.22+** (`pubspec.yaml`); CI runs the latest `stable` |
 | Dart | **3.4+** (bundled with Flutter) |
-| Android | `compileSdk` managed by Flutter; `minSdk` 21 |
+| Android | `compileSdk` / `minSdk` from the Flutter toolchain defaults |
 | JDK | 17 (for Android/Gradle) |
-| Gradle | 8.9 (via wrapper) · Android Gradle Plugin 8.5.2 · Kotlin 1.9.24 |
-| Xcode | 15+ (for iOS) |
+| Gradle | 8.11.1 (via wrapper) · Android Gradle Plugin 8.9.2 · Kotlin 1.9.24 |
 
 ### Steps
 
@@ -143,12 +148,12 @@ flutter run
 > a fresh clone analyzes, tests and builds without step 2. Re-run `build_runner`
 > (step 2) after changing any model and commit the regenerated files.
 
-> **Platform folders:** Android is fully configured, including the committed
-> Gradle wrapper (`gradlew`, `gradlew.bat` **and** `gradle-wrapper.jar`) so the
-> build uses a pinned Gradle version straight from a clone. For a complete iOS project run
-> `flutter create --platforms=ios .` once (it won't touch `lib/`); see
-> [`ios/README_IOS.md`](ios/README_IOS.md). Copy
-> `android/local.properties.example` to `android/local.properties`.
+> **Platform folders:** Android builds from a clone (the Gradle wrapper,
+> `gradle-wrapper.jar` included, is committed). Copy
+> `android/local.properties.example` to `android/local.properties` first.
+> **iOS does not build from a clone** — only `AppDelegate.swift` and
+> `Info.plist` are versioned; run `flutter create --platforms=ios .` once to
+> generate the Xcode project. See [`ios/README_IOS.md`](ios/README_IOS.md).
 
 ---
 
@@ -170,29 +175,31 @@ Unit and widget tests cover the parts most worth protecting:
   ingredient (not the row index) when the list reorders or shrinks.
 - `test/search_page_test.dart` — the 400 ms search debounce: one request per
   keystroke burst, the two-character minimum, and cancellation on clear.
+- `test/error_message_test.dart` — error screens render the friendly
+  `ApiException` message, never the raw `ApiException(500): ...` form.
 
 Run them with `flutter test`.
 
 ---
 
-## 🎯 What this demonstrates
+## 🚧 Scope & known limitations
 
-- **Clean, scalable architecture** — feature-first modules with a clear
-  data/repository/presentation split and a reusable `core/` layer.
-- **Modern state management** — Riverpod providers, derived state, and
-  `StateNotifier`s wired to persistence.
-- **Real mobile engineering** — offline persistence (Hive), navigation with
-  per-tab stacks (`go_router`), responsive phone/tablet layouts, and polished
-  loading/empty/error UX.
-- **API integration done carefully** — HTTPS-only Dio client, typed models with
-  `freezed`, and defensive parsing against a quirky real-world API.
-- **Security awareness** — no secrets, cleartext traffic disabled, validated
-  external links, and user-safe error messaging.
-- **Product thinking** — two features that go beyond a CRUD demo: the random
-  roulette and the auto-built shopping list.
+Stated up front so nothing here is a surprise:
+
+- **Android only from a clone.** `ios/` holds just `AppDelegate.swift` and
+  `Info.plist`; the Xcode project has to be generated (see above). CI runs
+  `analyze` + `test` — it does not build an artifact for either platform.
+- **Release APKs are signed with the debug keystore** so `flutter run --release`
+  works out of the box. They are for local profiling, not for distribution.
+- **No screenshots or hosted demo yet.** Run it locally to see the UI.
+- **Read-only, single public API.** No accounts, no backend of my own, no sync
+  and no write path, so there is nothing to authenticate or encrypt.
+- **Not covered by tests:** the router, theme persistence, the categories
+  datasource and the favorites providers. No golden or integration tests.
 
 ---
 
 ## 📄 License
 
-Released under the MIT License. Recipe data © [TheMealDB](https://www.themealdb.com/).
+MIT © Lucas Gabriel Ferreira do Nascimento — see [LICENSE](LICENSE).
+Recipe data © [TheMealDB](https://www.themealdb.com/).
